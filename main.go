@@ -8,7 +8,9 @@ import (
 	"net/http"
 	"os"
 
+	//"github.com/golang-jwt/jwt/v4"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 	"gorm.io/gorm"
 )
@@ -144,6 +146,10 @@ func main() {
 		DB: db,
 	}
 	app := fiber.New()
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*", // Update with the actual origin of your frontend
+		AllowMethods: "GET,POST,DELETE",
+	}))
 	r.SetupRoutes(app)
 	app.Listen(":8080")
 

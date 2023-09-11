@@ -1,0 +1,247 @@
+
+/*
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Database</title>
+    //CSS style
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('background.PNG');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 3px solid #000;
+            background-color:blanchedalmond;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 30vh;
+        }
+        .movie-list {
+            list-style: none;
+            padding: 0;
+        }
+        .movie-list li {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .title {
+            text-align: center; /* Center the text horizontally */
+            margin-top: 110px;
+            font-size: 50px;
+            color:darkcyan;
+            font-style: italic;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .delete-icon {
+            width: 20px;
+            height: 20px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    
+    <h1 class="title">Movie Database</h1>
+    <div class="container">
+        <form id="addMovieForm">
+            <label for="title">Title:</label>
+            <input type="text" id="title" required>
+            <label for="cast">Cast:</label>
+            <input type="text" id="cast" required>
+            <button type="submit">Add Movie</button>
+        </form>
+        <h2>Movies:</h2>
+        <ul class="movie-list" id="movieList">
+            <!-- Movie items will be added here dynamically -->
+        </ul>
+        <div>
+            <button id="getMoviesButton">Get Movies</button>
+            <button id="deleteMoviesButton" style="margin-left: 20px;">Delete Movies</button>
+        </div>
+    <div>
+        <div id="successMessage" class="success-message"></div>
+    </div>
+    </div>
+
+    <script>
+        const addMovieForm = document.getElementById('addMovieForm');
+        const titleInput = document.getElementById('title');
+        const castInput = document.getElementById('cast');
+        const movieList = document.getElementById('movieList');
+        const getMoviesButton = document.getElementById('getMoviesButton');
+        const deleteMoviesButton = document.getElementById('deleteMoviesButton');
+        const successMessage = document.getElementById('successMessage');
+
+        addMovieForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = titleInput.value;
+            const cast = castInput.value;
+
+            try {
+                const response = await fetch('http://localhost:8080/api/create_movie', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ title, cast }),
+                });
+
+                if (response.ok) {
+                    titleInput.value = '';
+                    castInput.value = '';
+                    loadMovies();
+                    const successMessage = document.getElementById('successMessage');
+                    successMessage.textContent = 'Movie added successfully!';
+                    successMessage.style.display = 'block';
+                     // Hide after some time
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                    }, 3000);
+                    //loadMovies();
+                    
+                } else {
+                    console.error('Failed to add movie. Status:', response.status);
+                    const errorText = await response.text();
+                    console.error('Error message:', errorText);
+                }
+            } catch (error) {
+                console.error('Error adding movie:', error);
+            }
+        });
+
+        getMoviesButton.addEventListener('click', () => {
+            loadMovies();
+            const successMessage = document.getElementById('successMessage');
+            successMessage.textContent = 'Movie fetched successfully!';
+            successMessage.style.display = 'block';
+                // Hide after some time
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 3000);
+                    
+            //loadMovies();
+        });
+
+        deleteMoviesButton.addEventListener('click', async () => {
+            try {
+                const response = await fetch('http://localhost:8080/api/movie', {
+                    method: 'GET',
+                });
+                //loadMovies();
+
+                if (response.ok) {
+                    loadMovies(true); // Show delete buttons
+                    successMessage.textContent = 'Which Movie you want to delete?';
+            successMessage.style.display = 'block';
+                // Hide after some time
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 3000);
+                } else {
+                    console.error('Failed to delete movies');
+                }
+            } catch (error) {
+                console.error('Error deleting movies:', error);
+            }
+        });
+
+        async function loadMovies(showDeleteButtons = false) {
+        try {
+            const response = await fetch('http://localhost:8080/api/movie');
+
+            if (response.ok) {
+                const data = await response.json();
+                const movies = data.data;
+                renderMovies(movies, showDeleteButtons);
+            } else {
+                console.error('Failed to fetch movies');
+            }
+        } catch (error) {
+            console.error('Error fetching movies:', error);
+            }
+        }
+
+        function renderMovies(movies, showDeleteButtons) {
+            movieList.innerHTML = '';
+            movies.forEach((movie) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                <span> <strong><em> Title: </strong> ${movie.Title}&nbsp; <strong> Cast: </strong> ${movie.Cast} </em></span>
+                `;
+
+
+
+                if (showDeleteButtons) {
+                    // Create the bin icon element
+                    const binIcon = document.createElement('img');
+                    binIcon.src = 'bin.png'; // Replace with the actual path to your bin icon image
+                    binIcon.alt = 'Bin';
+                    binIcon.className = 'delete-icon';
+
+                    // Add a click event listener to trigger the deleteMovie function
+                    binIcon.addEventListener('click', () => deleteMovie(movie.ID));
+
+                    // Append the bin icon to the list item
+                    li.appendChild(binIcon);
+                } else {
+                    // Create the movie title element (e.g., a <span> or <div>) here if needed
+                    //const movieTitle = document.createElement('span');
+                    //movieTitle.textContent = movie.Title;
+                    
+                    // Append the movie title to the list item
+                    //li.appendChild(movieTitle);
+                }
+
+                /*
+                if (showDeleteButtons) {
+                    //const deleteButton = li.querySelector('button');
+                    const deleteIcon = document.createElement('img');
+                    li.innerHTML += `<button onclick="deleteMovie('${movie.ID}')" style="margin-left:20px;">Delete</button>`;
+                }
+                */
+                movieList.appendChild(li);
+            });
+        }
+
+        
+
+        async function deleteMovie(id) {
+            try {
+                const response = await fetch(`http://localhost:8080/api/delete_movie/${id}`, {
+                    method: 'DELETE',
+                });
+
+                if (response.ok) {
+                    const successMessage = document.getElementById('successMessage');
+                    successMessage.textContent = 'Movie deleted successfully!';
+                    successMessage.style.display = 'block';
+                        // Hide after some time
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                    }, 5000);
+                    loadMovies(true);
+                } else {
+                    console.error('Failed to delete movie');
+                }
+            } catch (error) {
+                console.error('Error deleting movie:', error);
+            }
+        }
+
+        // Initial load of movies
+       // loadMovies();
+    </script>
+</body>
+</html>*/

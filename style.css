@@ -1,0 +1,78 @@
+/* Your CSS styles here */
+body {
+    font-family: Arial, sans-serif;
+    background-image: url('background1.JPG');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+.container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    border: 5px solid #212528;
+    background-color:#585858;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+
+    min-height: 30vh;
+    /*background-blend-mode: lighten;*/ 
+}
+.movie-list {
+    list-style: none;
+    padding: 0;
+}
+.movie-list li {
+    margin-bottom: 10px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    
+}
+.title {    /* Movie database main heading*/
+    margin-right: auto;
+    text-align: center; /* Center the text horizontally */
+    margin-top: 110px;
+    
+    font-size: 50px;
+    color:#585858;
+    font-style: italic;
+    font-family: 'Times New Roman', Times, serif;
+    
+}
+.add-icon:hover {
+    transform: scale(1.2); /* Increase the icon's size when hovering */
+    background-color: #757573;
+}
+.delete-icon {
+    width: 20px;
+    height: 20px;
+    margin-left: auto;
+}
+.delete-icon:hover{
+    padding: 1px;
+    background-color: #757573;
+}
+.bullet-point {
+    width: 18px; /* Adjust the width to your desired size */
+    height: 16px; /* Adjust the height to your desired size */
+    margin-right: 5px;
+}
+#title, #cast {
+    background-color: #707273; /* Set the input fields' background to inherit from the form */
+    /* Add other input field styling here as needed */
+}
+#getMoviesButton,
+#deleteMoviesButton {
+    background-color: #707273; /* Change this to your desired background color */
+    color: #fff; /* Change this to your desired text color */
+    padding: 10px 15px; /* Add padding for better button appearance */
+    border: 1px solid #212528;
+    cursor: pointer;
+}
+#getMoviesButton:hover,
+#deleteMoviesButton:hover {
+    background-color: #212120; /* Change this to your desired hover background color */
+}
